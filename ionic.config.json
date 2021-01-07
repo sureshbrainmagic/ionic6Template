@@ -1,0 +1,7 @@
+{
+  "name": "addison_admin_app",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
