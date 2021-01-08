@@ -1,0 +1,13 @@
+<div class="imgContainer">
+  <img  src="../../../assets/head.png">
+  <div class="top-left" *ngIf="!showDealer">
+    <i class="fa fa-bars fa-1x" (click)="config.toggleMenu()" ></i>&nbsp;
+    {{ title}}
+  </div>
+
+  <div class="top-left" *ngIf="showDealer" >
+      <i (click)="goToHome()" class="fa fa-arrow-left fa-1x"></i>&nbsp;
+    {{ title }}
+  </div>
+
+</div>

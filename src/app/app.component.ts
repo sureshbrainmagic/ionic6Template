@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
+import { ToastService } from './services/toast/toast.service';
+import { ConnectionStatus, NetworkchkService } from './services/network/networkchk.service';
+declare var window;
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -11,6 +13,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 })
 export class AppComponent implements OnInit {
   public selectedIndex = 0;
+  public lsAdminDet: any = [];
   public appPages = [
     {
       title: 'Inbox',
@@ -48,15 +51,31 @@ export class AppComponent implements OnInit {
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
+    private screenOrientation: ScreenOrientation,
+    private networkService: NetworkchkService,
+    private toastService: ToastService,
   ) {
     this.initializeApp();
+    window.app = this;
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
+      this.statusBar.styleLightContent();
       this.splashScreen.hide();
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+      if (localStorage.getItem('lsAdminDet') != null) {
+        this.lsAdminDet = JSON.parse(localStorage.getItem('lsAdminDet'));
+      }
+      this.networkService.onNetworkChange().subscribe((status: ConnectionStatus) => {
+        if (status === ConnectionStatus.Offline) {
+          this.toastService.toastFn(`Internet is not available  ☹️`);
+          setTimeout(() => {
+            this.networkService.exitFunction('Exit and try again', 'Internet is not available ...!');
+          }, 2000);
+        }
+      });
     });
   }
 
